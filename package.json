@@ -1,13 +1,17 @@
 {
-  "name": "react-web-components",
+  "name": "react-experiments",
   "version": "1.0.0",
-  "description": "react experiment web components",
+  "description": "react experiment components",
   "main": "index.js",
+  "LICENSE": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joanjane/react-experiments"
+  },
   "scripts": {
     "start": "webpack-dev-server --open --mode development",
     "build": "webpack --mode production"
   },
-  "LICENSE": "MIT",
   "dependencies": {
     "react": "^16.10.2",
     "react-dom": "^16.10.2"
