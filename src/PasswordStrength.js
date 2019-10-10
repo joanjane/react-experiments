@@ -1,78 +1,74 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 
-class PasswordStrength extends Component {
-  constructor(props) {
-    super(props);
-    
-    this.rules = {
-      minLength: (value) => {
-        return /^.{8,}$/.test(value);
-      },
-      numbers: (value) => {
-        return /[0-9]/.test(value);
-      },
-      lowercase: (value) => {
-        return /[a-z]/.test(value);
-      },
-      capitals: (value) => {
-        return /[A-Z]/.test(value);
-      },
-      symbols: (value) => {
-        return /[\W\s]/.test(value);
-      },
-    };
+const rules = {
+  minLength: (value) => {
+    return /^.{8,}$/.test(value);
+  },
+  numbers: (value) => {
+    return /[0-9]/.test(value);
+  },
+  lowercase: (value) => {
+    return /[a-z]/.test(value);
+  },
+  capitals: (value) => {
+    return /[A-Z]/.test(value);
+  },
+  symbols: (value) => {
+    return /[\W\s]/.test(value);
+  },
+};
 
-    this.state = {
-      value: '',
-      strength: 0,
-      appliedRules: this.runRules('')
-    };
-  }
+function PasswordStrength({ value, name, placeholder }) {
+  const [control, setControl] = useState({
+    value,
+    strength: 0,
+    appliedRules: runRules('')
+  });
 
-  setPassword(e) {
+  function setPassword(e) {
     const { value } = e.target;
-    const appliedRules = this.runRules(value);
-    const strength = this.calcPasswordStrength(appliedRules);
+    const appliedRules = runRules(value);
+    const strength = calcPasswordStrength(appliedRules);
 
-    this.setState({ value, strength, appliedRules });
+    setControl({ value, strength, appliedRules });
   }
 
-  runRules(password) {
-    return Object.keys(this.rules).map(ruleKey => {
-      return { rule: ruleKey, result: this.rules[ruleKey](password) };
+  function runRules(password) {
+    return Object.keys(rules).map(ruleKey => {
+      return { rule: ruleKey, result: rules[ruleKey](password) };
     })
   }
 
-  calcPasswordStrength(appliedRules) {
+  function calcPasswordStrength(appliedRules) {
     return appliedRules.filter(r => r.result).length;
   }
 
-  render() {
-    return (
+  return (
+    <div>
+      <input type='password' 
+        name={name} 
+        value={control.value}
+        onChange={(e) => setPassword(e)}
+        placeholder={placeholder} />
       <div>
-        <input type='password' 
-          name={this.props.name} 
-          value={this.state.value}
-          onChange={(e) => this.setPassword(e)}
-          placeholder={this.props.placeholder} />
-        <div>
-          <strong>Strength:</strong>{this.state.strength}/{this.state.appliedRules.length}
-          <ul>
-            {this.state.appliedRules.map(r => <li className={r.result ? 'rule-ok' : 'rule-ko'}>
-              {r.rule}
-            </li>)}
-          </ul>
-        </div>
+        <strong>Strength:</strong>{control.strength}/{control.appliedRules.length}
+        <ul>
+          {control.appliedRules.map(r => <li key={r.rule} className={r.result ? 'rule-ok' : 'rule-ko'}>
+            {r.rule}
+          </li>)}
+        </ul>
       </div>
-    );
-  }
+    </div>
+  );
 }
 
+
 document.querySelectorAll('password-strength-component').forEach(wrapper => {
-  const { placeholder, name } = document.querySelector("password-strength-component").attributes;
+  const { placeholder, name, value } = document.querySelector("password-strength-component").attributes;
   ReactDOM.render(<PasswordStrength
       placeholder = { placeholder && placeholder.value }
       name = { name && name.value }
+      value = { value && value.value }
     />, wrapper)
 });
